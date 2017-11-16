@@ -1,5 +1,59 @@
-﻿// readProperty PropertiesServiceのこと。DefaultをScriptとして、Userを利用する為の関数でWrapしてる
+﻿function setDefaultProperties(){
+  var scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.setProperty("baseUrl", 'https://jmtech.backlog.jp');
+  scriptProperties.setProperty("apiKey", 'Fo23qZF9ZpO0EqriRvn6Y354ZWYBOjEvJpdzjtIHTJJMcd4Hg4VvBgDgP61cUStU');
+  scriptProperties.setProperty("test", 'test');
+}
+function deleteUserKeys(){
+  var userProperties = PropertiesService.getUserProperties();
+  userProperties.deleteAllProperties();
+}
 
+function test(){
+  Logger.log(readProperty("apiKey"));
+}
+function readProperty(key){
+  var userProperties = PropertiesService.getUserProperties();
+  var value = userProperties.getProperty(key)
+  if (value == null){
+    var scriptProperties = PropertiesService.getScriptProperties();
+    value = scriptProperties.getProperty(key)
+    userProperties.setProperty(key, value);
+    value = value + " sc";
+  }
+  return value;
+}
+function doGet1(e) {
+  var params = JSON.stringify(e);
+  return HtmlService.createHtmlOutput(params);
+}
+function openDialoga() {
+  var html = HtmlService.createTemplateFromFile('Index');
+  html.data = getProjectsList();
+  html.evaluate();
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showModalDialog(html, 'Dialog title');
+}
+// Use this code for Google Docs, Forms, or new Sheets.
+function onOpena() {
+  Browser.msgBox(openDialog());
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .createMenu('Dialog')
+      .addItem('Open', 'openDialog')
+      .addToUi();
+}
+
+function openDialog() {
+  var html = HtmlService.createHtmlOutputFromFile('Index');
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showModalDialog(html, 'Dialog title');
+}
+
+// http://libro.tuyano.com/index3?id=655001&page=7
+// Rohm 宛に送信したメールの中で、Threadの最初のメッセージに付加されたファイルをコメントとしてBacklogの「質問＆・・」に追加する
+// 課題）
+// Unzip：GASでunzip がPassword非対応。あと、毎回手動でつけちゃうPasswordを勝手に解除するとなると決められたルールにする必要があって失敗しそうなんで、やめ
+// 「未設定」って文字＠Backlog：不明・・
 function addCommentFromSentFileToRohm() {  
   var baseUrl = readProperty("baseUrl");
   var apiKey = "?apiKey=" + readProperty("apiKey");
@@ -72,9 +126,12 @@ function getProjectsList(){
   var apiKey = "?apiKey=" + readProperty("apiKey");
   var postAttachementFile = "/api/v2/projects" ;
   var postUrl = baseUrl + postAttachementFile + apiKey;
-    
-  Browser.msgBox(UrlFetchApp.fetch(postUrl));
-
+  return (UrlFetchApp.fetch(postUrl));
+/*
+ [{"id":58072,"projectKey":"ENA_Z","name":"学究社（JMT内部管理用）","chartEnabled":true,"subtaskingEnabled":true,"projectLeaderCanEditProjectLeader":false,"useWikiTreeView":true,"textFormattingRule":"backlog","archived":false,"displayOrder":30},
+  {"id":86532,"projectKey":"JMTTS000003","name":"TG1（AI&IoT）プロジェクト管理","chartEnabled":true,"subtaskingEnabled":true,"projectLeaderCanEditProjectLeader":false,"useWikiTreeView":true,"textFormattingRule":"backlog","archived":false,"displayOrder":2147483646},
+  {"id":89738,"projectKey":"IT24B113000","name":"ローム京都_CMPロガー開発","chartEnabled":true,"subtaskingEnabled":true,"projectLeaderCanEditProjectLeader":true,"useWikiTreeView":true,"textFormattingRule":"backlog","archived":false,"displayOrder":2147483646}]
+  */
 }
 // 質問の課題ID取得してみた
 function getIssue(){  
@@ -146,4 +203,90 @@ function getMail(){
             row++;
         }
     }
+}
+function doGet_OldUiApp() {
+  var data = Charts.newDataTable()
+      .addColumn(Charts.ColumnType.STRING, "Name")
+      .addColumn(Charts.ColumnType.STRING, "Gender")
+      .addColumn(Charts.ColumnType.NUMBER, "Age")
+      .addColumn(Charts.ColumnType.NUMBER, "Donuts eaten")
+      .addRow(["Michael", "Male", 12, 5])
+      .addRow(["Elisa", "Female", 20, 7])
+      .addRow(["Robert", "Male", 7, 3])
+      .addRow(["John", "Male", 54, 2])
+      .addRow(["Jessica", "Female", 22, 6])
+      .addRow(["Aaron", "Male", 3, 1])
+      .addRow(["Margareth", "Female", 42, 8])
+      .addRow(["Miranda", "Female", 33, 6])
+      .build();
+  
+   var ageFilter = Charts.newNumberRangeFilter()
+      .setFilterColumnLabel("Age")
+      .build();
+
+  var genderFilter = Charts.newCategoryFilter()
+      .setFilterColumnLabel("Gender")
+      .build();
+
+  var pieChart = Charts.newPieChart()
+      .setDataViewDefinition(Charts.newDataViewDefinition()
+                            .setColumns([0, 3]))
+      .build();
+
+  var tableChart = Charts.newTableChart()
+      .build();
+  
+   var dashboard = Charts.newDashboardPanel()
+      .setDataTable(data)
+      .bind([ageFilter, genderFilter], [pieChart, tableChart])
+      .build();
+
+    var uiApp = UiApp.createApplication();
+
+  dashboard.add(uiApp.createVerticalPanel()
+                .add(uiApp.createHorizontalPanel()
+                    .add(ageFilter).add(genderFilter)
+                    .setSpacing(70))
+                .add(uiApp.createHorizontalPanel()
+                    .add(pieChart).add(tableChart)
+                    .setSpacing(10)));
+
+  uiApp.add(dashboard);
+  return uiApp;
+}
+// Use this code for Google Docs, Forms, or new Sheets.
+function onOpen() {
+  FormApp.getUi() // Or DocumentApp or FormApp.
+      .createMenu('Dialog')
+      .addItem('Open', 'openDialog')
+      .addToUi();
+}
+
+function openDialog() {
+  var html = HtmlService.createHtmlOutputFromFile('Index');
+  SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
+      .showModalDialog(html, 'Dialog title');
+}
+
+function doGet(e) {
+  t = HtmlService.createTemplateFromFile('Index.html');
+  t.title = 'Gmail to Backlog settings';
+  t.data =(getProjectsList());
+  return t.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME);
+}
+function getEmail(){
+  return "hoge";
+}
+function doSomething() {
+  setDefaultProperties();
+  Logger.log('I was called!');
+}
+
+function testInclude(){
+  var inc = include('css');
+  return inc;
+}
+function include(filename) {
+  Logger.log(filename);
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }

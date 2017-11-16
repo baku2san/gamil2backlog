@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+  <base target="_top">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><?= title ?></title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script>
+      function onSuccess(projectList) {
+        var div = document.getElementById('output');
+        
+        for (var i = 0, li; i < projectList.length; ++i) {
+        li = document.createElement("li");
+        li.textContent = projectList[i].name;
+        div.appendChild(li);
+        }
+      }
+      function updateButton(email, button) {
+        button.value = 'Clicked by ' + email;
+      }
+
+      google.script.run.withSuccessHandler(onSuccess)
+          .getProjectsList();
+          
+    </script>
+  </head>
+  <body>
+  test
+  test
+    <div id="output" ></div>
+    <input type="button" value="Not Clicked"
+      onclick="google.script.run
+          .withSuccessHandler(updateButton)
+          .withUserObject(this)
+          .getEmail()" />
+    <input type="button" value="Not Clicked"
+      onclick="google.script.run
+          .withSuccessHandler(updateButton)
+          .withUserObject(this)
+          .getEmail()" />
+          
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <div class="navbar-brand"><?= title ?></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mainpanel">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <table class="table table-striped">
+            <thead><th>Id</th><th>projectKey</th><th>Name</th></thead>
+            <tbody data-bind="foreach: project">
+              <tr>
+                <td data-bind="text: id"></td>
+                <td data-bind="text: projectKey"></td>
+                <td data-bind="text: name"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+  <script type="text/javascript">
+    var model = { project: JSON.parse(<?= data ?>) };
+
+    $(document).ready(function () {
+      ko.applyBindings(model);
+    });
+  </script>
+  </body>
+</html>
