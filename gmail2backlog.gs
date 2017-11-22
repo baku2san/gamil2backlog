@@ -1,29 +1,4 @@
-﻿function setDefaultProperties(){
-  var scriptProperties = PropertiesService.getScriptProperties();
-  scriptProperties.setProperty("baseUrl", 'https://jmtech.backlog.jp');
-  scriptProperties.setProperty("apiKey", 'Fo23qZF9ZpO0EqriRvn6Y354ZWYBOjEvJpdzjtIHTJJMcd4Hg4VvBgDgP61cUStU');
-  scriptProperties.setProperty("test", 'test');
-}
-function deleteUserKeys(){
-  var userProperties = PropertiesService.getUserProperties();
-  userProperties.deleteAllProperties();
-}
-
-function test(){
-  Logger.log(readProperty("apiKey"));
-}
-function readProperty(key){
-  var userProperties = PropertiesService.getUserProperties();
-  var value = userProperties.getProperty(key)
-  if (value == null){
-    var scriptProperties = PropertiesService.getScriptProperties();
-    value = scriptProperties.getProperty(key)
-    userProperties.setProperty(key, value);
-    value = value + " sc";
-  }
-  return value;
-}
-function doGet1(e) {
+﻿function doGet1(e) {
   var params = JSON.stringify(e);
   return HtmlService.createHtmlOutput(params);
 }
@@ -137,25 +112,15 @@ function getProjectsList(){
 function getIssue(){  
   var baseUrl = readProperty("baseUrl");
   var apiKey = "?apiKey=" + readProperty("apiKey");
-  var postAttachementFile = "/api/v2/issues/9065148" ;
-  var postUrl = baseUrl + postAttachementFile + apiKey ;
+  var apiName = "/api/v2/issues/9065148" ;
+  var postUrl = baseUrl + apiName + apiKey ;
     
   Browser.msgBox(UrlFetchApp.fetch(postUrl));
 //  var result = JSON.parse(UrlFetchApp.fetch('http://httpbin.org/post', options).getContentText());
 //  Logger.log(result);
 }
-function getIssueList(){  
-  var baseUrl = readProperty("baseUrl");
-  var apiKey = "?apiKey=" + readProperty("apiKey");
-  var params = "&projectId[]=89738";
-  var postAttachementFile = "/api/v2/issues" ;
-  var postUrl = baseUrl + postAttachementFile + apiKey + params;
-  
-  
-  Browser.msgBox(UrlFetchApp.fetch(postUrl));
-//  var result = JSON.parse(UrlFetchApp.fetch('http://httpbin.org/post', options).getContentText());
-//  Logger.log(result);
-}
+
+
 function getSharedFileList(){  
   var baseUrl = readProperty("baseUrl");
   var apiKey = "?apiKey=" + readProperty("apiKey");
@@ -168,92 +133,6 @@ function getSharedFileList(){
 //  Logger.log(result);
 }
 
-function getWikiList(){  
-  var baseUrl = readProperty("baseUrl");
-  var apiKey = "?apiKey=" + readProperty("apiKey");
-  var params = "&projectIdOrKey=89738";
-  var postAttachementFile = "/api/v2/wikis" ;
-  var postUrl = baseUrl + postAttachementFile + apiKey + params;
-  
-  
-  Browser.msgBox(UrlFetchApp.fetch(postUrl));
-//  var result = JSON.parse(UrlFetchApp.fetch('http://httpbin.org/post', options).getContentText());
-//  Logger.log(result);
-}
-function getMail(){
-    var sheet = SpreadsheetApp.getActiveSheet();
-    var thds = GmailApp.getInboxThreads();
-    var row = 1;
-    for(var n in thds){
-        var thd = thds[n];
-        sheet.getRange(row++,1).setValue(thd.getMessageCount());
-        var msgs = thd.getMessages();
-        for(m in msgs){
-            var msg = msgs[m];
-            var from = msg.getFrom();
-            var to = msg.getTo();
-            var date = msg.getDate();
-            var subject = msg.getSubject();
-            var body = msg.getBody();
-            sheet.getRange(row,1).setValue(date);
-            sheet.getRange(row,2).setValue(from);
-            sheet.getRange(row,3).setValue(to);
-            sheet.getRange(row,4).setValue(subject);
-            //sheet.getRange(row,5).setValue(body); // カット!
-            row++;
-        }
-    }
-}
-function doGet_OldUiApp() {
-  var data = Charts.newDataTable()
-      .addColumn(Charts.ColumnType.STRING, "Name")
-      .addColumn(Charts.ColumnType.STRING, "Gender")
-      .addColumn(Charts.ColumnType.NUMBER, "Age")
-      .addColumn(Charts.ColumnType.NUMBER, "Donuts eaten")
-      .addRow(["Michael", "Male", 12, 5])
-      .addRow(["Elisa", "Female", 20, 7])
-      .addRow(["Robert", "Male", 7, 3])
-      .addRow(["John", "Male", 54, 2])
-      .addRow(["Jessica", "Female", 22, 6])
-      .addRow(["Aaron", "Male", 3, 1])
-      .addRow(["Margareth", "Female", 42, 8])
-      .addRow(["Miranda", "Female", 33, 6])
-      .build();
-  
-   var ageFilter = Charts.newNumberRangeFilter()
-      .setFilterColumnLabel("Age")
-      .build();
-
-  var genderFilter = Charts.newCategoryFilter()
-      .setFilterColumnLabel("Gender")
-      .build();
-
-  var pieChart = Charts.newPieChart()
-      .setDataViewDefinition(Charts.newDataViewDefinition()
-                            .setColumns([0, 3]))
-      .build();
-
-  var tableChart = Charts.newTableChart()
-      .build();
-  
-   var dashboard = Charts.newDashboardPanel()
-      .setDataTable(data)
-      .bind([ageFilter, genderFilter], [pieChart, tableChart])
-      .build();
-
-    var uiApp = UiApp.createApplication();
-
-  dashboard.add(uiApp.createVerticalPanel()
-                .add(uiApp.createHorizontalPanel()
-                    .add(ageFilter).add(genderFilter)
-                    .setSpacing(70))
-                .add(uiApp.createHorizontalPanel()
-                    .add(pieChart).add(tableChart)
-                    .setSpacing(10)));
-
-  uiApp.add(dashboard);
-  return uiApp;
-}
 // Use this code for Google Docs, Forms, or new Sheets.
 function onOpen() {
   FormApp.getUi() // Or DocumentApp or FormApp.
@@ -271,7 +150,7 @@ function openDialog() {
 function doGet(e) {
   t = HtmlService.createTemplateFromFile('Index.html');
   t.title = 'Gmail to Backlog settings';
-  t.data =(getProjectsList());
+  t.data =getProjectsList();
   return t.evaluate().setSandboxMode(HtmlService.SandboxMode.IFRAME);
 }
 function getEmail(){
@@ -289,4 +168,29 @@ function testInclude(){
 function include(filename) {
   Logger.log(filename);
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+
+function getWikis(projectId){  
+  var baseUrl = readProperty("baseUrl");
+  var apiKey = "?apiKey=" + readProperty("apiKey");
+  var params = "&projectIdOrKey=" + projectId;
+  var apiName = "/api/v2/wikis" ;
+  var postUrl = baseUrl + apiName + apiKey + params;
+  
+  var result = JSON.parse(UrlFetchApp.fetch(postUrl));
+  Logger.log(result);
+  return result
+}
+function getIssues(projectId){  
+  var baseUrl = readProperty("baseUrl");
+  var apiKey = "?apiKey=" + readProperty("apiKey");
+  var params = "&projectId[]=" + projectId;
+  var apiName = "/api/v2/issues" ;
+  var postUrl = baseUrl + apiName + apiKey + params;
+
+  return JSON.parse(UrlFetchApp.fetch(postUrl));
+//  var result = JSON.parse(UrlFetchApp.fetch(postUrl));
+//  Logger.log(result);
+//  return result
 }

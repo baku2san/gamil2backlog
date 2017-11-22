@@ -2,33 +2,77 @@
 <html lang="ja">
   <head>
   <base target="_top">
+  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= title ?></title>
   <!-- Bootstrap -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <script>
-      function onSuccess(projectList) {
-        var div = document.getElementById('output');
-        
-        for (var i = 0, li; i < projectList.length; ++i) {
-        li = document.createElement("li");
-        li.textContent = projectList[i].name;
-        div.appendChild(li);
-        }
-      }
-      function updateButton(email, button) {
-        button.value = 'Clicked by ' + email;
-      }
 
-      google.script.run.withSuccessHandler(onSuccess)
-          .getProjectsList();
-          
-    </script>
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <style>
+  body {
+    padding-top: 50px;
+  }
+  .mainpanel {
+    padding: 2px 15px;
+    
+  }
+  .logpanel 
+    width: 100%;
+  }
+  </style>
   </head>
-  <body>
-  test
-  test
+  <body>       
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <div class="navbar-brand"><?= title ?></div>
+      </div>
+    </div>
+  </nav>
+  <div class="mainpanel">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <table class="table table-striped">
+            <thead><th>id</th><th>projectKey</th><th>Name</th><th>select</th></thead>
+            <tbody data-bind="foreach: project">
+              <tr>
+                <td data-bind="text: id"></td>
+                <td data-bind="text: projectKey"></td>
+                <td data-bind="text: name"></td>
+                <td><input data-bind="value: id" type='radio' name='radioProjects' onclick="google.script.run.withSuccessHandler(selectProject).getIssues(value)"/></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <table class="table table-striped">
+            <thead><th>id</th><th>issueKey</th><th>summary</th><th>description</th><th>select</th></thead>
+            <tbody data-bind="foreach: issue">
+              <tr>
+                <td data-bind="text: id"></td>
+                <td data-bind="text: issueKey"></td>
+                <td data-bind="text: summary"></td>
+                <td data-bind="text: description"></td>
+                <td><input data-bind="value: id" type='radio' name='radioIssues' onclick="google.script.run.withSuccessHandler(selectProject).withUserObject(this).getIssues(value)"/></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <input data-bind="value: issue"/>
+                <button type="submit">Add Task</button>
     <div id="output" ></div>
     <input type="button" value="Not Clicked"
       onclick="google.script.run
@@ -39,43 +83,46 @@
       onclick="google.script.run
           .withSuccessHandler(updateButton)
           .withUserObject(this)
-          .getEmail()" />
-          
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <div class="navbar-brand"><?= title ?></div>
-      </div>
-    </div>
-  </nav>
-
-  <div class="mainpanel">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-8">
-          <table class="table table-striped">
-            <thead><th>Id</th><th>projectKey</th><th>Name</th></thead>
-            <tbody data-bind="foreach: project">
-              <tr>
-                <td data-bind="text: id"></td>
-                <td data-bind="text: projectKey"></td>
-                <td data-bind="text: name"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+          .getEmail()" />   
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
   <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
   <script type="text/javascript">
-    var model = { project: JSON.parse(<?= data ?>) };
+    var backlogModel = { 
+      project: JSON.parse(<?= data ?>),
+      issue: ko.observable(null)
+    };
 
     $(document).ready(function () {
-      ko.applyBindings(model);
+      ko.applyBindings(backlogModel);
     });
-  </script>
+    
+    function test(){
+          var div = document.getElementById('output');
+      for (var i = 0, li, inputRadio; i < model.project.length; ++i) {
+      li = document.createElement("li"); 
+      li.textContent = model.project[i].id;
+      div.appendChild(li);
+      inputRadio = document.createElement("input");
+      inputRadio.textContent = model.project[i].name;
+      inputRadio.value = model.project[i].id;
+      inputRadio.name = 'radioName';
+      inputRadio.type = "radio";
+      li.appendChild(inputRadio);
+      }
+
+    }
+    function onSuccess(projectList) {
+    }
+    function updateButton(email, button) {
+    button.value = 'Clicked by ' + email;
+    debugger;
+    }
+    function selectProject(issues){
+      backlogModel.issue ( issues);
+    }
+    
+    </script>
   </body>
 </html>
