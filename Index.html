@@ -41,10 +41,9 @@
       <div class="row">
         <div class="col-md-8">
           <table class="table table-striped">
-            <thead><th>id</th><th>projectKey</th><th>Name</th><th>select</th></thead>
+            <thead><th>projectKey</th><th>Name</th><th>select</th></thead>
             <tbody data-bind="foreach: project">
               <tr>
-                <td data-bind="text: id"></td>
                 <td data-bind="text: projectKey"></td>
                 <td data-bind="text: name"></td>
                 <td><input data-bind="value: id" type='radio' name='radioProjects' onclick="google.script.run.withSuccessHandler(selectProject).getIssues(value)"/></td>
@@ -57,10 +56,10 @@
       <div class="row">
         <div class="col-md-8">
           <table class="table table-striped">
-            <thead><th>id</th><th>issueKey</th><th>summary</th><th>description</th><th>select</th></thead>
+            <thead><th>No</th><th>issueKey</th><th>summary</th><th>description</th><th>select</th></thead>
             <tbody data-bind="foreach: issue">
               <tr>
-                <td data-bind="text: id"></td>
+                <td data-bind="text: $index() + 1"></td>
                 <td data-bind="text: issueKey"></td>
                 <td data-bind="text: summary"></td>
                 <td data-bind="text: description"></td>
