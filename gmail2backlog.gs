@@ -158,6 +158,23 @@ function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
+function getOwnUser(){  
+  var key = "userId";
+  var userProperties = PropertiesService.getUserProperties();
+  var value = userProperties.getProperty(key);
+  if (value != null) return value;
+  
+  var baseUrl = readProperty("baseUrl");
+  var apiKey = "?apiKey=" + readProperty("apiKey");
+  var params = "";
+  var apiName = "/api/v2/users/myself" ;
+  var postUrl = baseUrl + apiName + apiKey + params;
+  
+  var result = JSON.parse(UrlFetchApp.fetch(postUrl));
+  var userId = result.id.toString(10);
+  userProperties.setProperty(key, userId);  
+  return userId;
+}
 
 function getWikis(projectId){  
   var baseUrl = readProperty("baseUrl");
