@@ -171,9 +171,10 @@ function getWikis(projectId){
   return result
 }
 function getIssues(projectId){  
+  var count = "&count=" + 10;
   var baseUrl = readProperty("baseUrl");
   var apiKey = "?apiKey=" + readProperty("apiKey");
-  var params = "&projectId[]=" + projectId;
+  var params = "&sort=updated&projectId[]=" + projectId + "&count=" + 10;
   var apiName = "/api/v2/issues" ;
   var postUrl = baseUrl + apiName + apiKey + params;
 
