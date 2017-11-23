@@ -96,18 +96,6 @@ function addComment(baseUrl, apiKey, attachmentFileId){
 //  Logger.log(result);
 }
 
-function getProjectsList(){  
-  var baseUrl = readProperty("baseUrl");
-  var apiKey = "?apiKey=" + readProperty("apiKey");
-  var postAttachementFile = "/api/v2/projects" ;
-  var postUrl = baseUrl + postAttachementFile + apiKey;
-  return (UrlFetchApp.fetch(postUrl));
-/*
- [{"id":58072,"projectKey":"ENA_Z","name":"学究社（JMT内部管理用）","chartEnabled":true,"subtaskingEnabled":true,"projectLeaderCanEditProjectLeader":false,"useWikiTreeView":true,"textFormattingRule":"backlog","archived":false,"displayOrder":30},
-  {"id":86532,"projectKey":"JMTTS000003","name":"TG1（AI&IoT）プロジェクト管理","chartEnabled":true,"subtaskingEnabled":true,"projectLeaderCanEditProjectLeader":false,"useWikiTreeView":true,"textFormattingRule":"backlog","archived":false,"displayOrder":2147483646},
-  {"id":89738,"projectKey":"IT24B113000","name":"ローム京都_CMPロガー開発","chartEnabled":true,"subtaskingEnabled":true,"projectLeaderCanEditProjectLeader":true,"useWikiTreeView":true,"textFormattingRule":"backlog","archived":false,"displayOrder":2147483646}]
-  */
-}
 // 質問の課題ID取得してみた
 function getIssue(){  
   var baseUrl = readProperty("baseUrl");
@@ -193,4 +181,12 @@ function getIssues(projectId){
 //  var result = JSON.parse(UrlFetchApp.fetch(postUrl));
 //  Logger.log(result);
 //  return result
+}
+
+function getProjectsList(){  
+  var baseUrl = readProperty("baseUrl");
+  var apiKey = "?apiKey=" + readProperty("apiKey");
+  var apiName = "/api/v2/projects" ;
+  var postUrl = baseUrl + apiName + apiKey;
+  return (UrlFetchApp.fetch(postUrl));
 }
